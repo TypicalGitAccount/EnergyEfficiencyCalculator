@@ -56,7 +56,7 @@ namespace EnergyEfficiencyBE.Services.Implementations.Auth
                         $"Register failed: {identityResult.Errors.FirstOrDefault().Description}");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Result.Fail<(IdentityResult, User)>(
                     $"Register failed!"
@@ -82,7 +82,7 @@ namespace EnergyEfficiencyBE.Services.Implementations.Auth
                     ? await _jwtService.GenerateTokenPairAsync(user)
                     : Result.Fail<TokenModel>($"Invalid password!");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Result.Fail<TokenModel>($"Login failed!");
             }
@@ -109,7 +109,7 @@ namespace EnergyEfficiencyBE.Services.Implementations.Auth
                 if (updateResult.Succeeded) return await _jwtService.GenerateTokenPairAsync(user);
                 else return Result.Fail<TokenModel>("Invalid change password attempt!");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Result.Fail<TokenModel>(
                     $"Зміна пароля не вдалася!"
@@ -127,8 +127,8 @@ namespace EnergyEfficiencyBE.Services.Implementations.Auth
                 {
                     var applicationUser = new User()
                     {
-                        Name = user.UserName,
-                        Email = user.Email,
+                        Name = user.UserName!,
+                        Email = user.Email!,
                         IdentityId = user.Id
                     };
 
@@ -141,7 +141,7 @@ namespace EnergyEfficiencyBE.Services.Implementations.Auth
                     return Result.Fail<User>($"User with email{entity.Email} already exists!");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Result.Fail<User>($"AuthService Server Fail!");
             }

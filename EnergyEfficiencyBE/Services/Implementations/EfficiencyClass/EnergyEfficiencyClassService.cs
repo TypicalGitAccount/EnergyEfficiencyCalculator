@@ -130,8 +130,18 @@ namespace EnergyEfficiencyBE.Services.Implementations.EfficiencyClass
 
         protected virtual decimal getEnergyConsumption()
         {
-            return _coolingEnergyConsumptionService.GetCoolingEnergyConsumption(_mapper.Map<CoolingEnergyConsumptionModel>(_data))
-                + _heatingEnergyConsumptionService.GetHeatingEnergyConsumption(_mapper.Map<HeatingEnergyConsumptionModel>(_data));
+            var heatingData = _mapper.Map<HeatingEnergyConsumptionModel>(_data);
+            var coolingData = _mapper.Map<CoolingEnergyConsumptionModel>(_data);
+
+            if(_data.Building != BuildingType.Common && _data.Building != BuildingType.Private)
+            {
+                var buildingVolume = _data.TotalHeatedArea * _data.TotalInnerHeight;
+                heatingData.HeatedAreaOrVolume = buildingVolume;
+                coolingData.ConditionedAreaOrVolume = buildingVolume;
+
+            }
+            return _coolingEnergyConsumptionService.GetCoolingEnergyConsumption(coolingData)
+                + _heatingEnergyConsumptionService.GetHeatingEnergyConsumption(heatingData);
         }
 
         protected decimal getPeakEnergyConsumption(BuildingType building, TemperatureZone tempZone, int stories)
